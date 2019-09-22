@@ -8,7 +8,7 @@ def test_post_image():
     with open('images/pharm.jpeg', 'rb') as image:
         payload = {
             'source_language': 'en',
-            'target_language': 'fr',
+            'target_language': 'es',
             'image': base64.b64encode(image.read()).decode('ascii')
         }
 
