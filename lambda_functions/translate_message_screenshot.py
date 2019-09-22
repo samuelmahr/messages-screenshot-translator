@@ -29,7 +29,7 @@ def handle_http_request(event):
     # translate_dialogue = translate_extracted_text(message_dialogue, source_language, target_language)
     return {
         'statusCode': 200,
-        'body': json.dumps({'message': 'Request received, soon to be implemented'})
+        'body': json.dumps({'dialogue': message_dialogue})
     }
 
 
@@ -40,11 +40,31 @@ def analyze_image_bytes(image_bytes):
         }
     )
 
+    is_first = True
+    is_last_speaker_person = False
+    speaker_text = ''
+    dialogue = list()
     for block in response['Blocks']:
+        is_speaker_person = bool(0.07 < block['Geometry']['BoundingBox']['Left'] < 0.08)
+        if is_first:
+            is_last_speaker_person = is_speaker_person
+            is_first = False
+
         if block['BlockType'] == 'LINE':
+            if is_last_speaker_person and not is_speaker_person and speaker_text:
+                dialogue.append(f'Person: {speaker_text}')
+                speaker_text = f"{block['Text']} "
+            elif not is_last_speaker_person and is_speaker_person and speaker_text:
+                dialogue.append(f'You: {speaker_text}')
+                speaker_text = f"{block['Text']} "
+            elif is_speaker_person == is_last_speaker_person:
+                speaker_text += f"{block['Text']} "
+
+            is_last_speaker_person = is_speaker_person
+
             LOGGER.info(block)
 
-    return list()
+    return dialogue
 
 
 def handle_s3_request(event):
