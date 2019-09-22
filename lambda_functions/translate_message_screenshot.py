@@ -26,10 +26,10 @@ def handle_http_request(event):
     source_language = request_payload['source_language']
     target_language = request_payload['target_language']
     message_dialogue = analyze_image_bytes(image)
-    # translate_dialogue = translate_extracted_text(message_dialogue, source_language, target_language)
+    translated_dialogue = translate_extracted_text(message_dialogue, source_language, target_language)
     return {
         'statusCode': 200,
-        'body': json.dumps({'dialogue': message_dialogue})
+        'body': json.dumps({'dialogue': translated_dialogue}, ensure_ascii=False)
     }
 
 
@@ -62,9 +62,21 @@ def analyze_image_bytes(image_bytes):
 
             is_last_speaker_person = is_speaker_person
 
-            LOGGER.info(block)
-
     return dialogue
+
+
+def translate_extracted_text(message_dialogue, source_language, target_language):
+    translated_dialogue = list()
+    for message in message_dialogue:
+        response = TRANSLATE_CLIENT.translate_text(
+            Text=message,
+            SourceLanguageCode=source_language,
+            TargetLanguageCode=target_language
+        )
+        translated_dialogue.append(response['TranslatedText'].encode('utf-8').decode())
+        LOGGER.info(response['TranslatedText'])
+
+    return translated_dialogue
 
 
 def handle_s3_request(event):
