@@ -25,7 +25,7 @@ Resources:
                 Action:
                   - logs:PutLogEvents
                   - logs:CreateLogStream
-                Resource: arn:aws:logs:us-east-1:#{AWS::AccountId}:log-group:/aws/lambda/${self:service}-${opt:stage}-TranslateScreenshot:*
+                Resource: arn:aws:logs:us-east-1:#{AWS::AccountId}:log-group:/aws/lambda/${self:service}-${opt:stage}-TranslateMessageScreenshot:*
               - Effect: Allow
                 Action:
                   - s3:Get*
@@ -33,6 +33,16 @@ Resources:
                 Resource:
                   - arn:aws:s3:::${self:service}-${opt:stage}-images
                   - arn:aws:s3:::${self:service}-${opt:stage}-images/*
+              - Effect: Allow
+                Action:
+                  - textract:DetectDocumentText
+                Resource:
+                  - "*"
+              - Effect: Allow
+                Action:
+                  - translate:TranslateText
+                Resource:
+                  - "*"
   AsyncTextractTopic:
     Type: AWS::SNS::Topic
     Properties:
