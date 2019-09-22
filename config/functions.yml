@@ -1,0 +1,26 @@
+---
+TranslateMessageScreenshot:
+  handler: lambda_functions/translate_message_screenshot.handler
+  name: ${self:service}-${opt:stage}-TranslateMessageScreenshot
+  description: Lambda function that analyzes an image with Textract and translates with Translate returning dialogue text
+  package:
+    include:
+      - lambda_functions/translate_message_screenshot.py
+    exclude:
+      - config/**
+  layers:
+    - arn:aws:lambda:us-east-1:113088814899:layer:Klayers-python37-boto3:12
+  memorySize: 128
+  timeout: 30
+  role: TranslateMessageScreenshotRole
+  events:
+    - s3:
+        bucket: ${self:service}-${opt:stage}-images
+        event: s3:ObjectCreated:*
+        rules:
+          - prefix: message/screenshots/
+        existing: true
+    - http:
+        path: message/translate
+        method: post
+        cors: true

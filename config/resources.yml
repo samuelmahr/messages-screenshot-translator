@@ -1,0 +1,64 @@
+---
+Resources:
+  ImagesBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: ${self:service}-${opt:stage}-images
+  TranslateMessageScreenshotRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: ${self:service}-${opt:stage}-TranslateMessageScreenshotRole
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: ${self:service}-${opt:stage}-TranslateScreenshotPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: "Allow"
+                Action:
+                  - logs:PutLogEvents
+                  - logs:CreateLogStream
+                Resource: arn:aws:logs:us-east-1:#{AWS::AccountId}:log-group:/aws/lambda/${self:service}-${opt:stage}-TranslateScreenshot:*
+              - Effect: Allow
+                Action:
+                  - s3:Get*
+                  - s3:PutObject
+                Resource:
+                  - arn:aws:s3:::${self:service}-${opt:stage}-images
+                  - arn:aws:s3:::${self:service}-${opt:stage}-images/*
+  AsyncTextractTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: ${self:service}-${opt:stage}-AsyncTextractTopic
+  AsyncTextracTopicPublishRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: ${self:service}-${opt:stage}-AsyncTextracTopicPublishRole
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - textract.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: ${self:service}-${opt:stage}-AsyncTextracTopicPublishPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action: sns:Publish
+                Resource: "*"
+              - Effect: Allow
+                Action:
+                  - s3:*
+                Resource:
+                  - Fn::GetAtt: [ImagesBucket, Arn]
