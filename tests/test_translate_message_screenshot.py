@@ -4,7 +4,8 @@ import requests
 
 
 def test_post_image():
-    with open('images/test_screenshot.png', 'rb') as image:
+    # Just sends an image to the API, does not do assertions. You can add assertions if you'd like
+    with open('images/pharm.jpeg', 'rb') as image:
         payload = {
             'source_language': 'en',
             'target_language': 'fr',

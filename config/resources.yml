@@ -35,6 +35,7 @@ Resources:
                   - arn:aws:s3:::${self:service}-${opt:stage}-images/*
               - Effect: Allow
                 Action:
+                  - textract:AnalyzeDocument
                   - textract:DetectDocumentText
                 Resource:
                   - "*"

@@ -24,6 +24,7 @@ functions: ${file(config/functions.yml)}
 resources: ${file(config/resources.yml)}
 
 plugins:
+  - serverless-python-requirements
   - serverless-pseudo-parameters
 
 custom:
