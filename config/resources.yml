@@ -3,11 +3,11 @@ Resources:
   ImagesBucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: ${self:service}-${opt:stage}-images
+      BucketName: ${self:service}-${self:provider.stage}-images
   TranslateMessageScreenshotRole:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: ${self:service}-${opt:stage}-TranslateMessageScreenshotRole
+      RoleName: ${self:service}-${self:provider.stage}-TranslateMessageScreenshotRole
       AssumeRolePolicyDocument:
         Version: '2012-10-17'
         Statement:
@@ -17,7 +17,7 @@ Resources:
                 - lambda.amazonaws.com
             Action: sts:AssumeRole
       Policies:
-        - PolicyName: ${self:service}-${opt:stage}-TranslateScreenshotPolicy
+        - PolicyName: ${self:service}-${self:provider.stage}-TranslateScreenshotPolicy
           PolicyDocument:
             Version: '2012-10-17'
             Statement:
@@ -25,14 +25,14 @@ Resources:
                 Action:
                   - logs:PutLogEvents
                   - logs:CreateLogStream
-                Resource: arn:aws:logs:us-east-1:#{AWS::AccountId}:log-group:/aws/lambda/${self:service}-${opt:stage}-TranslateMessageScreenshot:*
+                Resource: arn:aws:logs:us-east-1:#{AWS::AccountId}:log-group:/aws/lambda/${self:service}-${self:provider.stage}-TranslateMessageScreenshot:*
               - Effect: Allow
                 Action:
                   - s3:Get*
                   - s3:PutObject
                 Resource:
-                  - arn:aws:s3:::${self:service}-${opt:stage}-images
-                  - arn:aws:s3:::${self:service}-${opt:stage}-images/*
+                  - arn:aws:s3:::${self:service}-${self:provider.stage}-images
+                  - arn:aws:s3:::${self:service}-${self:provider.stage}-images/*
               - Effect: Allow
                 Action:
                   - textract:AnalyzeDocument
@@ -47,11 +47,11 @@ Resources:
   AsyncTextractTopic:
     Type: AWS::SNS::Topic
     Properties:
-      TopicName: ${self:service}-${opt:stage}-AsyncTextractTopic
+      TopicName: ${self:service}-${self:provider.stage}-AsyncTextractTopic
   AsyncTextracTopicPublishRole:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: ${self:service}-${opt:stage}-AsyncTextracTopicPublishRole
+      RoleName: ${self:service}-${self:provider.stage}-AsyncTextracTopicPublishRole
       AssumeRolePolicyDocument:
         Version: '2012-10-17'
         Statement:
@@ -61,7 +61,7 @@ Resources:
                 - textract.amazonaws.com
             Action: sts:AssumeRole
       Policies:
-        - PolicyName: ${self:service}-${opt:stage}-AsyncTextracTopicPublishPolicy
+        - PolicyName: ${self:service}-${self:provider.stage}-AsyncTextracTopicPublishPolicy
           PolicyDocument:
             Version: '2012-10-17'
             Statement:

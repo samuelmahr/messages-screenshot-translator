@@ -4,7 +4,7 @@ provider:
   name: aws
   runtime: python3.7
 
-  stage: funsies
+  stage: ${opt:stage, 'funsies'}
 
 package:
   individually: true

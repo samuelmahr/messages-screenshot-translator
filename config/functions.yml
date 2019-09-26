@@ -1,7 +1,7 @@
 ---
 TranslateMessageScreenshot:
   handler: lambda_functions/translate_message_screenshot.handler
-  name: ${self:service}-${opt:stage}-TranslateMessageScreenshot
+  name: ${self:service}-${self:provider.stage}-TranslateMessageScreenshot
   description: Lambda function that analyzes an image with Textract and translates with Translate returning dialogue text
   package:
     include:
@@ -16,7 +16,7 @@ TranslateMessageScreenshot:
   role: TranslateMessageScreenshotRole
   events:
     - s3:
-        bucket: ${self:service}-${opt:stage}-images
+        bucket: ${self:service}-${self:provider.stage}-images
         event: s3:ObjectCreated:*
         rules:
           - prefix: message/screenshots/
@@ -25,3 +25,4 @@ TranslateMessageScreenshot:
         path: message/translate
         method: post
         cors: true
+        authorizer: aws_iam
